@@ -382,7 +382,7 @@ def pairs_identification(
                     )
                 else:
                     logger.error(
-                        "Method of co-integration is not supported please select from ['Engle-Granger', 'Phillips-Ouliaris', 'Johansen']"
+                        "Method of cointegration is not supported please select from ['Engle-Granger', 'Phillips-Ouliaris', 'Johansen']"
                     )
 
                 if cointegration_report["Cointegrated"] == True:
