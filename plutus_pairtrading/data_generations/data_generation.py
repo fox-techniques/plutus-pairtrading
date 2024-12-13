@@ -40,6 +40,46 @@ def validate_securities(data: pd.DataFrame, securities: List[str]) -> None:
         raise ValueError(f"Securities not found in data: {missing}")
 
 
+import numpy as np
+import pandas as pd
+
+
+@_log_execution_time
+def generate_random_stock_prices(
+    ticker_label: str = "TICKER",
+    start_price: float = 150,
+    num_days: int = 100,
+    mu: float = 0.0005,
+    sigma: float = 0.01,
+    start_date: str = "2023-01-01",
+) -> pd.DataFrame:
+    """
+    Generate random stock prices using geometric Brownian motion.
+
+    Args:
+        ticker_label (str): Ticker label. Defaults to "TICKER"
+        start_price (float): Initial stock price. Defaults to 150.
+        num_days (int): Number of days to generate data for. Defaults to 100.
+        mu (float): Expected daily return. Defaults to 0.0005 (0.05%).
+        sigma (float): Daily volatility. Defaults to 0.01 (1%).
+        start_date (str): Start date for the time series. Defaults to "2023-01-01".
+
+    Returns:
+        pd.DataFrame: DataFrame with a "date" index and "AAPL" column of prices.
+    """
+    np.random.seed(42)  # For reproducibility
+
+    # Generate daily returns using random normal distribution
+    daily_returns = np.random.normal(mu, sigma, num_days)
+
+    # Simulate price changes using cumulative product
+    prices = start_price * np.exp(np.cumsum(daily_returns))
+
+    # Create a DataFrame with dates and prices
+    dates = pd.date_range(start=start_date, periods=num_days, freq="D")
+    return pd.DataFrame({ticker_label: prices}, index=dates)
+
+
 @_log_execution_time
 def compute_returns(
     data: pd.DataFrame, securities: List[str], return_period: str = "daily"
@@ -213,28 +253,35 @@ def compute_correlation_dataframe(
 
 
 @_log_execution_time
-def slice_data_with_dates(data, cut_start_date, cut_end_date):
+def slice_data_with_dates(
+    data: pd.DataFrame, cut_start_date: str, cut_end_date: str
+) -> pd.DataFrame:
     """
-    This function slices data based on the requested start and end date
+    Slices the data based on the requested start and end dates.
 
     Args:
-        data (DataFrame): Pandas dataframe
-        start_date (str): Cut start date
-        end_date (str): Cut end date
+        data (pd.DataFrame): Input DataFrame with a DatetimeIndex.
+        cut_start_date (str): Start date for slicing (inclusive).
+        cut_end_date (str): End date for slicing (inclusive).
 
     Returns:
-        DataFrame: Pandas dataframe of sliced data
+        pd.DataFrame: Sliced DataFrame.
+
+    Raises:
+        ValueError: If the sliced DataFrame is empty or indices are not valid dates.
     """
+    if not isinstance(data.index, pd.DatetimeIndex):
+        raise ValueError("Data must have a DatetimeIndex for slicing by dates.")
 
-    data_start_index = data.index.get_loc(cut_start_date, method="ffill")
-    data_end_index = data.index.get_loc(cut_end_date, method="ffill")
+    try:
+        sliced_data = data.loc[cut_start_date:cut_end_date]
+    except KeyError as e:
+        raise ValueError(f"Error slicing data: {e}")
 
-    sliced_data = data[
-        (
-            (data.index >= data.index[data_start_index])
-            & (data.index <= data.index[data_end_index])
+    if sliced_data.empty:
+        raise ValueError(
+            f"No data available in the range {cut_start_date} to {cut_end_date}."
         )
-    ]
 
     return sliced_data
 

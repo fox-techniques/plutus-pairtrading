@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import yfinance as yf
 from datetime import date
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from functools import reduce
 
 from ..utils.performance import _log_execution_time
@@ -50,7 +50,7 @@ def load_csv_data(
 
 @_log_execution_time
 def store_data_as_csv(
-    data: pd.DataFrame, file_path: str, include_index: bool = False
+    data: pd.DataFrame, file_path: str, include_index: bool = True
 ) -> None:
     """
     Save a DataFrame as a CSV file.
@@ -58,7 +58,7 @@ def store_data_as_csv(
     Args:
         data (pd.DataFrame): DataFrame to save.
         file_path (str): Destination file path.
-        include_index (bool, optional): Whether to include the DataFrame index. Defaults to False.
+        include_index (bool, optional): Whether to include the DataFrame index. Defaults to True.
     """
     ensure_directory_exists(os.path.dirname(file_path))
     data.to_csv(file_path, index=include_index)
@@ -104,7 +104,9 @@ def fetch_yahoo_finance_data(
 
 @_log_execution_time
 def combine_dataframes(
-    dataframes: List[pd.DataFrame], join_type: str = "inner"
+    dataframes: List[pd.DataFrame],
+    join_type: str = "inner",
+    suffixes: Tuple[str, str] = ("_left", "_right"),
 ) -> pd.DataFrame:
     """
     Combine multiple DataFrames by joining on their indices.
@@ -112,13 +114,28 @@ def combine_dataframes(
     Args:
         dataframes (List[pd.DataFrame]): List of DataFrames to combine.
         join_type (str, optional): Type of join to perform ('inner', 'outer', etc.). Defaults to "inner".
+        suffixes (Tuple[str, str], optional): Suffixes to apply to overlapping columns. Defaults to ("_left", "_right").
 
     Returns:
         pd.DataFrame: Combined DataFrame.
     """
     if not dataframes:
         return pd.DataFrame()
-    return reduce(lambda left, right: left.join(right, how=join_type), dataframes)
+
+    # Ensure all DataFrames use the same index
+    for df in dataframes:
+        if not df.index.name:
+            df.index.name = "date"
+
+    # Combine dataframes using reduce and join
+    combined = reduce(
+        lambda left, right: left.join(
+            right, how=join_type, lsuffix=suffixes[0], rsuffix=suffixes[1]
+        ),
+        dataframes,
+    )
+
+    return combined
 
 
 @_log_execution_time
@@ -224,5 +241,6 @@ def read_and_combine_ticker_files(
     if not dataframes:
         raise ValueError("No valid data could be read from the specified files.")
 
+    # Combine dataframes
     combined_data = combine_dataframes(dataframes, join_type=join_type)
     return combined_data

@@ -101,7 +101,7 @@ def engle_granger_cointegration_test(
         "Critical Value": coint_result.critical_values[int(significance_level * 100)],
         "Trend": trend,
         "Cointegrated Vector": coint_result.cointegrating_vector,
-        "Cointegrated": coint_result.pvalue < significance_level,
+        "Cointegrated": bool(coint_result.pvalue < significance_level),
         f"spread_{securities[0]}_{securities[1]}": coint_result.resid,
     }
 
@@ -149,7 +149,7 @@ def phillips_ouliaris_cointegration_test(
         "Critical Value": coint_result.critical_values[int(significance_level * 100)],
         "Trend": trend,
         "Cointegrated Vector": coint_result.cointegrating_vector,
-        "Cointegrated": coint_result.pvalue < significance_level,
+        "Cointegrated": bool(coint_result.pvalue < significance_level),
         f"spread_{securities[0]}_{securities[1]}": coint_result.resid,
     }
 

@@ -77,17 +77,21 @@ def augmented_dickey_fuller_test(
         raise ValueError(f"Security '{security}' not found in the DataFrame.")
     clean_data = data[security].dropna()
 
+    # Adjust max_lag based on data length
+    max_lag = min(max_lag_for_auto_detect, len(clean_data) - 1)
+
+    # Perform the ADF test
     adf = ADF(
         clean_data,
         method=method.lower(),
         lags=num_lags,
-        max_lags=max_lag_for_auto_detect,
+        max_lags=max_lag,
         trend=adf_trend,
     )
     return {
         "Statistic": adf.stat,
         "p-Value": adf.pvalue,
-        "Stationary": adf.pvalue < significance_level,
+        "Stationary": bool(adf.pvalue < significance_level),
         "Lags": adf.lags,
         "Trend": trend,
         "Critical Values": adf.critical_values,
@@ -124,11 +128,15 @@ def philips_perron_test(
         raise ValueError(f"Security '{security}' not found in the DataFrame.")
     clean_data = data[security].dropna()
 
+    # Ensure lags are feasible
+    max_possible_lags = len(clean_data) - 1
+    lags = lags if lags is not None else max_possible_lags
+
     pp = PhillipsPerron(clean_data, lags=lags, trend=pp_trend)
     return {
         "Statistic": pp.stat,
         "p-Value": pp.pvalue,
-        "Stationary": pp.pvalue < significance_level,
+        "Stationary": bool(pp.pvalue < significance_level),
         "Lags": pp.lags,
         "Trend": trend,
         "Critical Values": pp.critical_values,
@@ -166,7 +174,7 @@ def KPSS_test(
     return {
         "Statistic": kpss.stat,
         "p-Value": kpss.pvalue,
-        "Stationary": kpss.pvalue >= significance_level,
+        "Stationary": bool(kpss.pvalue >= significance_level),
         "Lags": kpss.lags,
         "Trend": trend,
         "Critical Values": kpss.critical_values,
