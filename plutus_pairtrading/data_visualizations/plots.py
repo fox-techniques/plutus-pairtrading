@@ -4,238 +4,165 @@ This module covers data visualization functions
 """
 
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import statsmodels.graphics.tsaplots as timeseries_plots
-import mpld3  # For interactive dashboard-ready plots
-
-from ..utils.performance import _log_execution_time
-import logging
-
-logger = logging.getLogger(__name__)
+import plotly.graph_objects as go
+import plotly.express as px
+import plotly.subplots as sp
 
 
-def configure_matplotlib(interactive: bool = False):
-    """
-    Configures Matplotlib for interactive or static plotting.
-
-    Args:
-        interactive (bool): If True, enables interactive mode for dashboards or notebooks.
-    """
-    if interactive:
-        plt.switch_backend("nbAgg")  # For interactive plots in Jupyter
-        plt.ion()  # Interactive mode ON
-    else:
-        plt.switch_backend("Agg")  # For non-interactive/static rendering
-        plt.ioff()  # Interactive mode OFF
-
-
-@_log_execution_time
 def plot_timeseries(
     data: pd.DataFrame,
     securities: list,
     plot_title: str = "Time-series Plot",
-    legend_location: str = "lower right",
-    fig_xsize: int = 16,
-    fig_ysize: int = 10,
-    interactive: bool = False,
+    legend_location: str = "bottom center",
 ) -> None:
     """
-    Plots the time-series of given securities as a line plot.
+    Plots the time-series of given securities using Plotly.
 
     Args:
         data (pd.DataFrame): Input dataset.
         securities (list): List of securities to plot.
         plot_title (str, optional): Title of the plot. Defaults to "Time-series Plot".
-        legend_location (str, optional): Location of the legend. Defaults to "lower right".
-        fig_xsize (int, optional): Width of the figure. Defaults to 16.
-        fig_ysize (int, optional): Height of the figure. Defaults to 10.
-        interactive (bool, optional): If True, enables interactive plotting. Defaults to False.
+        legend_location (str, optional): Location of the legend. Defaults to "bottom center".
 
     Returns:
-        None
+        None: Displays the interactive plot.
     """
-    configure_matplotlib(interactive=interactive)
-    fig, ax = plt.subplots(figsize=(fig_xsize, fig_ysize))
-
+    fig = go.Figure()
     for sec in securities:
-        ax.plot(data.index, data[sec], label=sec)
+        fig.add_trace(go.Scatter(x=data.index, y=data[sec], mode="lines", name=sec))
 
-    ax.set_title(plot_title)
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Value")
-    ax.grid(True, linestyle="--", alpha=0.5)
-    ax.legend(loc=legend_location)
-
-    if interactive:
-        return mpld3.display(fig)
-    else:
-        plt.show()
+    fig.update_layout(
+        title=plot_title,
+        xaxis_title="Date",
+        yaxis_title="Value",
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
+    )
+    fig.show()
 
 
-@_log_execution_time
 def plot_dual_timeseries(
     data: pd.DataFrame,
     securities: list,
     plot_title: str = "Dual Time-series Plot",
-    legend_location: str = "lower right",
-    fig_xsize: int = 16,
-    fig_ysize: int = 10,
-    interactive: bool = False,
 ) -> None:
     """
-    Plots two time-series with dual Y-axes.
+    Plots two time-series with dual Y-axes using Plotly.
 
     Args:
         data (pd.DataFrame): Input dataset.
         securities (list): List of two securities to plot.
         plot_title (str, optional): Title of the plot. Defaults to "Dual Time-series Plot".
-        legend_location (str, optional): Location of the legend. Defaults to "lower right".
-        fig_xsize (int, optional): Width of the figure. Defaults to 16.
-        fig_ysize (int, optional): Height of the figure. Defaults to 10.
-        interactive (bool, optional): If True, enables interactive plotting. Defaults to False.
 
     Returns:
-        None
+        None: Displays the interactive plot.
     """
     if len(securities) != 2:
         raise ValueError("Dual time-series plot requires exactly two securities.")
 
-    configure_matplotlib(interactive=interactive)
-    fig, ax1 = plt.subplots(figsize=(fig_xsize, fig_ysize))
-    ax2 = ax1.twinx()
+    fig = sp.make_subplots(specs=[[{"secondary_y": True}]])
+    fig.add_trace(
+        go.Scatter(x=data.index, y=data[securities[0]], name=securities[0]),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(x=data.index, y=data[securities[1]], name=securities[1]),
+        secondary_y=True,
+    )
 
-    ax1.plot(data.index, data[securities[0]], label=securities[0], color="blue")
-    ax2.plot(data.index, data[securities[1]], label=securities[1], color="orange")
-
-    ax1.set_title(plot_title)
-    ax1.set_xlabel("Date")
-    ax1.set_ylabel(securities[0], color="blue")
-    ax2.set_ylabel(securities[1], color="orange")
-
-    ax1.grid(True, linestyle="--", alpha=0.5)
-
-    lines, labels = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines + lines2, labels + labels2, loc=legend_location)
-
-    if interactive:
-        return mpld3.display(fig)
-    else:
-        plt.show()
+    fig.update_layout(
+        title=plot_title,
+        xaxis_title="Date",
+        yaxis_title_left=f"{securities[0]}",
+        yaxis_title_right=f"{securities[1]}",
+    )
+    fig.show()
 
 
-@_log_execution_time
 def plot_correlation_matrix(
     data: pd.DataFrame,
     securities: list,
     plot_title: str = "Correlation Matrix",
     method: str = "spearman",
-    fig_xsize: int = 8,
-    fig_ysize: int = 6,
-    interactive: bool = False,
 ) -> None:
     """
-    Plots the correlation matrix for given securities.
+    Plots the correlation matrix for given securities using Plotly.
 
     Args:
         data (pd.DataFrame): Input dataset.
         securities (list): List of securities to include in the correlation matrix.
         plot_title (str, optional): Title of the plot. Defaults to "Correlation Matrix".
         method (str, optional): Method for computing correlation. Defaults to "spearman".
-        fig_xsize (int, optional): Width of the figure. Defaults to 8.
-        fig_ysize (int, optional): Height of the figure. Defaults to 6.
-        interactive (bool, optional): If True, enables interactive plotting. Defaults to False.
 
     Returns:
-        None
+        None: Displays the interactive plot.
     """
-    configure_matplotlib(interactive=interactive)
-    fig, ax = plt.subplots(figsize=(fig_xsize, fig_ysize))
-
     corr_matrix = data[securities].corr(method=method)
-    sns.heatmap(corr_matrix, annot=True, cmap="RdBu", center=0, linewidths=0.5, ax=ax)
+    fig = px.imshow(
+        corr_matrix,
+        text_auto=True,
+        color_continuous_scale="RdBu",
+        zmin=-1,
+        zmax=1,
+        title=plot_title,
+    )
+    fig.show()
 
-    ax.set_title(plot_title)
 
-    if interactive:
-        return mpld3.display(fig)
-    else:
-        plt.show()
-
-
-@_log_execution_time
 def plot_acf(
     data: pd.DataFrame,
     security: str,
     num_of_lags: int = 20,
     plot_title: str = "Autocorrelation Plot",
-    fig_xsize: int = 8,
-    fig_ysize: int = 6,
-    interactive: bool = False,
 ) -> None:
     """
-    Plots the autocorrelation function for a given security.
+    Plots the autocorrelation function for a given security using Plotly.
 
     Args:
         data (pd.DataFrame): Input dataset.
         security (str): Security to compute autocorrelation for.
         num_of_lags (int, optional): Number of lags to compute. Defaults to 20.
         plot_title (str, optional): Title of the plot. Defaults to "Autocorrelation Plot".
-        fig_xsize (int, optional): Width of the figure. Defaults to 8.
-        fig_ysize (int, optional): Height of the figure. Defaults to 6.
-        interactive (bool, optional): If True, enables interactive plotting. Defaults to False.
 
     Returns:
-        None
+        None: Displays the interactive plot.
     """
-    configure_matplotlib(interactive=interactive)
-    fig, ax = plt.subplots(figsize=(fig_xsize, fig_ysize))
+    from statsmodels.graphics.tsaplots import acf
 
-    timeseries_plots.plot_acf(data[security], lags=num_of_lags, ax=ax)
+    acf_values = acf(data[security], nlags=num_of_lags)
+    fig = px.bar(
+        x=list(range(len(acf_values))),
+        y=acf_values,
+        labels={"x": "Lag", "y": "Autocorrelation"},
+        title=plot_title,
+    )
+    fig.show()
 
-    ax.set_title(f"{plot_title} ({security})")
 
-    if interactive:
-        return mpld3.display(fig)
-    else:
-        plt.show()
-
-
-@_log_execution_time
 def plot_pacf(
     data: pd.DataFrame,
     security: str,
     num_of_lags: int = 20,
     plot_title: str = "Partial-Autocorrelation Plot",
-    fig_xsize: int = 8,
-    fig_ysize: int = 6,
-    interactive: bool = False,
 ) -> None:
     """
-    Plots the partial autocorrelation function for a given security.
+    Plots the partial autocorrelation function for a given security using Plotly.
 
     Args:
         data (pd.DataFrame): Input dataset.
         security (str): Security to compute partial autocorrelation for.
         num_of_lags (int, optional): Number of lags to compute. Defaults to 20.
         plot_title (str, optional): Title of the plot. Defaults to "Partial-Autocorrelation Plot".
-        fig_xsize (int, optional): Width of the figure. Defaults to 8.
-        fig_ysize (int, optional): Height of the figure. Defaults to 6.
-        interactive (bool, optional): If True, enables interactive plotting. Defaults to False.
 
     Returns:
-        None
+        None: Displays the interactive plot.
     """
-    configure_matplotlib(interactive=interactive)
-    fig, ax = plt.subplots(figsize=(fig_xsize, fig_ysize))
+    from statsmodels.graphics.tsaplots import pacf
 
-    timeseries_plots.plot_pacf(data[security], lags=num_of_lags, method="ywm", ax=ax)
-
-    ax.set_title(f"{plot_title} ({security})")
-
-    if interactive:
-        return mpld3.display(fig)
-    else:
-        plt.show()
+    pacf_values = pacf(data[security], nlags=num_of_lags)
+    fig = px.bar(
+        x=list(range(len(pacf_values))),
+        y=pacf_values,
+        labels={"x": "Lag", "y": "Partial Autocorrelation"},
+        title=plot_title,
+    )
+    fig.show()
