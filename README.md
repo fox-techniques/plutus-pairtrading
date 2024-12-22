@@ -1,12 +1,12 @@
 # PLUTUS: Pair-Trading Toolkit
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-darkcyan)](https://pypi.org/project/irene-sankey/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-darkcyan)](https://pypi.org/project/irene-sankey/)
 [![PyPI - Version](https://img.shields.io/pypi/v/plutus-pairtrading?label=PyPI%20Version&color=green)](https://pypi.org/project/plutus-pairtrading/)
 [![PyPI Downloads](https://static.pepy.tech/badge/plutus-pairtrading)](https://pepy.tech/projects/plutus-pairtrading)
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://github.com/fox-techniques/plutus-pairtrading/blob/main/LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-plutus--pairtrading-181717?logo=github)](https://github.com/fox-techniques/plutus-pairtrading)
 
-PLUTUS is a Python-based toolkit for performing pair-trading. This project is designed for educational purposes and provides tools for:
+PLUTUS is a Python-based toolkit for performing pair-trading analysis. This project is designed for educational purposes and provides tools for:
 
 - Fetching and processing financial data.
 - Conducting statistical tests (stationarity and cointegration).
@@ -73,7 +73,7 @@ Install **Plutus Pair-Trading Toolkit** using pip:
 pip install plutus-pairtrading
 ```
 
-> **Note**: Requires Python 3.8 or above.
+> **Note**: Requires Python 3.10 or above.
 
 
 ## Quick Start
