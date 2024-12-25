@@ -329,7 +329,7 @@ def plot_acf(
     y_label: str = "Autocorrelation",
     bar_color: str = "#00CC96",
     fig_xsize: int = 800,
-    fig_ysize: int = 600,
+    fig_ysize: int = 300,
     background_color: str = "#F1F1F1",
 ) -> go.Figure:
     """
@@ -344,7 +344,7 @@ def plot_acf(
         y_label (str, optional): Label for the Y-axis. Defaults to "Autocorrelation".
         bar_color (str, optional): Color of the bars in the plot. Defaults to "#00CC96".
         fig_xsize (int, optional): Width of the figure in pixels. Defaults to 800.
-        fig_ysize (int, optional): Height of the figure in pixels. Defaults to 600.
+        fig_ysize (int, optional): Height of the figure in pixels. Defaults to 300.
         background_color (str, optional): Background color of the plot area. Defaults to "#F1F1F1".
 
     Returns:
@@ -383,7 +383,7 @@ def plot_pacf(
     y_label: str = "Partial Autocorrelation",
     bar_color: str = "#1B705A",
     fig_xsize: int = 800,
-    fig_ysize: int = 600,
+    fig_ysize: int = 300,
     background_color: str = "#F1F1F1",
 ) -> go.Figure:
     """
@@ -398,7 +398,7 @@ def plot_pacf(
         y_label (str, optional): Label for the Y-axis. Defaults to "Partial Autocorrelation".
         bar_color (str, optional): Color of the bars in the plot. Defaults to "#1B705A".
         fig_xsize (int, optional): Width of the figure in pixels. Defaults to 800.
-        fig_ysize (int, optional): Height of the figure in pixels. Defaults to 600.
+        fig_ysize (int, optional): Height of the figure in pixels. Defaults to 300.
         background_color (str, optional): Background color of the plot area. Defaults to "#F1F1F1".
 
     Returns:

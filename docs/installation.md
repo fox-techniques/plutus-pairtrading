@@ -1,5 +1,9 @@
 # Installation 
 
+Prerequisites:
+
+- Python 3.10 or higher
+
 ## with pip <small>recommended</small> { #with-pip data-toc-label="with pip" }
 
 PLUTUS is published as a python package and can be installed with
@@ -37,14 +41,7 @@ PLUTUS with:
 
 This will automatically install compatible versions of all dependencies. PLUTUS always strives to support the latest versions, so there's no need to install the dependencies separately. PLUTUS dependencies are listed below: 
 
-- [numpy]
-- [pandas]
-- [plotly]
-- [requests]
-- [matplotlib]
-- [yfinance]
-- [arch]
-- [seaborn]
+  [numpy] | [pandas] | [plotly] | [requests] | [matplotlib] | [yfinance] | [arch] | [seaborn]
 
 ---
 
@@ -81,7 +78,6 @@ pip install -e plutus-pairtrading
 
 Prerequisites:
 
-- Python 3.10 or higher
 - [Poetry]
 
 Installing PLUTUS:
@@ -111,6 +107,18 @@ Updating the Package:
 ```bash
 poetry update plutus-pairtrading
 ```
+
+Add packages to a group:
+
+```bash
+poetry add --group notebook jupyter ipykernel
+```
+
+Install the dependencies from a group:
+```bash
+poetry install --with notebook
+```
+
 
   [GitHub]: https://github.com/fox-techniques/plutus-pairtrading
   [numpy]: https://pypi.org/project/numpy/
