@@ -31,6 +31,73 @@ pairs_df = dgen.pairs_identification(
 print(pairs_df)
 ```
 
+## PLUTUS Tests
+
+The PLUTUS toolkit includes comprehensive tests for stationarity, cointegration, and data validation to ensure the accuracy and reliability of pair-trading strategies.
+
+### Stationarity Tests
+
+#### Augmented Dickey-Fuller Test (ADF)
+
+The ADF test checks for stationarity in a time-series.
+
+=== "ADF Test"
+
+    ```py 
+    from plutus_pairtrading.tests.stationarity_tests import augmented_dickey_fuller_test
+    import pandas as pd
+
+    # Load sample data
+    data = pd.read_csv("data/tickers/AAPL.csv", index_col="date", parse_dates=True)
+
+    # Perform ADF Test
+    result = augmented_dickey_fuller_test(
+        data=data,
+        security="close",
+        trend="constant",
+        significance_level=0.05,
+    )
+
+    print(result)
+    ```
+
+
+=== "Expected Output"
+
+    ```json
+    {
+        "Statistic": -3.5,
+        "p-Value": 0.01,
+        "Stationary": True,
+        "Lags": 5,
+        "Trend": "constant",
+        "Critical Values": {"1%": -3.43, "5%": -2.86, "10%": -2.57},
+    }
+    ```
+
+
+#### Phillips-Perron Test (PP)
+
+The PP test is another method for assessing stationarity.
+
+
+from plutus_pairtrading.tests.stationarity_tests import philips_perron_test
+import pandas as pd
+
+# Load sample data
+data = pd.read_csv("data/tickers/GOOG.csv", index_col="date", parse_dates=True)
+
+# Perform PP Test
+result = philips_perron_test(
+    data=data,
+    security="close",
+    trend="constant",
+    significance_level=0.05,
+)
+
+print(result)
+
+
 ## PLUTUS Data Acquisition 
 
 This section highlights how to acquire data using the PLUTUS package:

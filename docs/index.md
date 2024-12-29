@@ -4,6 +4,8 @@ title: PLUTUS Pair-Trading Toolkit
 
 # PLUTUS: Pair-Trading Toolkit
 
+![PLUTUS Flyer](assets/plutus-flyer.png){ width=200 }
+
 [![Python](https://img.shields.io/badge/Python-3.10%2B-darkcyan)](https://pypi.org/project/plutus-pairtrading/)
 [![PyPI - Version](https://img.shields.io/pypi/v/plutus-pairtrading?label=PyPI%20Version&color=green)](https://pypi.org/project/plutus-pairtrading/)
 [![PyPI Downloads](https://static.pepy.tech/badge/plutus-pairtrading)](https://pepy.tech/projects/plutus-pairtrading)
