@@ -4,10 +4,6 @@
 
 In this section, we demonstrate how to identify cointegrated pairs using the PLUTUS package.
 
-### Cointegration Pair-Identification
-
-Here's how you can use PLUTUS to identify pairs that exhibit cointegration:
-
 ```py title="plutus_pair_identification_demo.py" linenums="1"
 import plutus_pairtrading.data_acquisitions as dacq
 import plutus_pairtrading.data_generations as dgen
@@ -38,8 +34,6 @@ print(pairs_df)
 ## PLUTUS Data Acquisition 
 
 This section highlights how to acquire data using the PLUTUS package:
-
-### Fetch Historical Stock Data
 
 You can fetch historical financial data for multiple tickers using the fetch_yahoo_finance_data function.
 
