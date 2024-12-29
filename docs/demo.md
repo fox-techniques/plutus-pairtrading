@@ -1,21 +1,102 @@
 # Demo 
 
-## PLUTUS Demo
+## PLUTUS Pair Identification
 
-[PLUTUS] has three main modules `data_acquisitions`, `data_generations`, and  `data_visualizations`. Here’s how each `data_visualization` plot looks like:
+In this section, we demonstrate how to identify cointegrated pairs using the PLUTUS package.
+
+### Cointegration Pair-Identification
+
+Here's how you can use PLUTUS to identify pairs that exhibit cointegration:
+
+```py title="plutus_pair_identification_demo.py" linenums="1"
+import plutus_pairtrading.data_acquisitions as dacq
+import plutus_pairtrading.data_generations as dgen
+import plutus_pairtrading.data_visualizations as dviz
+
+# Fetch stock data for multiple securities
+AAPL_df = dacq.fetch_yahoo_finance_data("AAPL", start_date="2015-01-01", end_date="2021-01-01")
+MSFT_df = dacq.fetch_yahoo_finance_data("MSFT", start_date="2015-01-01", end_date="2021-01-01")
+GOOG_df = dacq.fetch_yahoo_finance_data("GOOG", start_date="2015-01-01", end_date="2021-01-01")
+TSLA_df = dacq.fetch_yahoo_finance_data("TSLA", start_date="2015-01-01", end_date="2021-01-01")
+
+# Combine the data into a single DataFrame
+stock_df = dacq.combine_dataframes([AAPL_df, MSFT_df, GOOG_df, TSLA_df])
+
+# Perform pair identification
+pairs_df = dgen.pairs_identification(
+    data=stock_df,
+    stationarity_method="ADF",
+    cointegration_method="phillips-ouliaris",
+    stationarity_significance_level=0.05,
+    coint_significance_level=0.05,
+)
+
+# Display the identified pairs
+print(pairs_df)
+```
+
+## PLUTUS Data Acquisition 
+
+This section highlights how to acquire data using the PLUTUS package:
+
+### Fetch Historical Stock Data
+
+You can fetch historical financial data for multiple tickers using the fetch_yahoo_finance_data function.
+
+=== "Code"
+
+    ```py title="data_acquisition_demo.py" linenums="1"
+
+    import plutus_pairtrading.data_acquisitions as dacq
+
+    # Fetch stock data for AAPL, MSFT, and TSLA
+    AAPL_df = dacq.fetch_yahoo_finance_data(
+        "AAPL", start_date="2015-01-01", end_date="2021-01-01",
+    )
+    MSFT_df = dacq.fetch_yahoo_finance_data(
+        "MSFT", start_date="2015-01-01", end_date="2021-01-01"
+    )
+    TSLA_df = dacq.fetch_yahoo_finance_data(
+        "TSLA", start_date="2015-01-01", end_date="2021-01-01"
+    )
+
+    # Combine the data into a single DataFrame
+    stock_df = dacq.combine_dataframes([AAPL_df, MSFT_df, TSLA_df])
+
+    # Save the data to CSV files
+    dacq.store_data_as_csv(AAPL_df, "data/tickers/AAPL.csv", )
+    dacq.store_data_as_csv(MSFT_df, "data/tickers/MSFT.csv")
+    dacq.store_data_as_csv(TSLA_df, "data/tickers/TSLA.csv")
+
+    combined_df = dacq.read_and_combine_ticker_files(
+        directory_path="data/tickers",
+        tickers=["AAPL", "MSFT", "TSLA"],
+        date_column="date",
+        column_suffix=["close", "close_adj"],
+        join_type="inner",
+    )
+    ```
+
+=== "Combined DataFrame"
+
+    | date       | AAPL_close_adj | AAPL_close | MSFT_close_adj | MSFT_close | TSLA_close_adj | TSLA_close |
+    |------------|----------------|------------|----------------|------------|----------------|------------|
+    | 2015-01-02 | 24.347172      | 27.332500  | 40.232841      | 46.759998  | 14.620667      | 14.620667  |
+    | 2015-01-05 | 23.661276      | 26.562500  | 39.862869      | 46.330002  | 14.006000      | 14.006000  |
+    | 2015-01-06 | 23.663506      | 26.565001  | 39.277802      | 45.650002  | 14.085333      | 14.085333  |
+    | 2015-01-07 | 23.995310      | 26.937500  | 39.776840      | 46.230000  | 14.063333      | 14.063333  |
+    | 2015-01-08 | 24.917269      | 27.972500  | 40.946987      | 47.590000  | 14.041333      | 14.041333  |
 
 
-=== "Time-series Plot"
+=== "Time-Series Plot"
 
-    ![Demo plot_timeseries](assets/plot_timeseries_screenshot.png){ width=800 }
+    ![Demo plot_time_series_for_dacq](assets/dacq_plot_timeseries_screenshot.png){ width=800 }
 
-=== "Dual Y-Axis Plot"
 
-    ![Demo plot_dual_timeseries](assets/plot_dual_timeseries_screenshot.png){ width=800 }
+## PLUTUS Data Visualization
 
-=== "Correlation Matrix"
+[PLUTUS] has `data_visualizations` module. Here’s how each plot for pair-trading looks like:
 
-    ![Demo plot_correlation_matrix](assets/plot_correlation_matrix_screenshot.png){ width=800 }
 
 === "ACF and PACF"
 
@@ -23,49 +104,117 @@
 
     ![Demo plot_pacf](assets/plot_pacf_screenshot.png){ width=800 }
 
-## How to Use
+    Here is the code to plot autocorrelation and partial-autocorrelation functions for a security:
+    
 
-Once the PLUTUS package is installed, you can use it in your projects. Here’s the code of the demo: 
+    ```py title="plutus_plot_acf_pacf_demo.py" linenums="1"
 
-```py title="plutus_pairtrading_demo.py" linenums="1"
-import pandas as pd
-from irene_sankey.core.traverse import traverse_sankey_flow
-from irene_sankey.plots.sankey import plot_irene_sankey_diagram
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.data_visualizations as dviz
 
-# Sample data to test the functionality
-input_df = pd.DataFrame(
-    {
-        "country": ["NL","NL","NL","DE","DE","FR","FR","FR","US","US","US"],
-        "industry": [
-            "Technology","Finance","Healthcare",
-            "Automotive","Engineering",
-            "Technology","Agriculture","Healthcare",
-            "Manufacturing","Technology","Finance"],
-        "field": [
-            "Software","Banking","Pharmaceuticals",
-            "Car Manufacturing","Mechanical Engineering",
-            "Software","Crop Science","Medical Devices",
-            "Electronics","AI & Robotics","Investment Banking"],
-    }
-)
+    # Fetch stock data
+    AAPL_df = dacq.fetch_yahoo_finance_data("AAPL", start_date="2015-01-01", end_date="2021-01-01")   
 
-# Generate source-target pair, node map and link for Sankey diagrams
-flow_df, node_map, link = traverse_sankey_flow(input_df, ["", "country", "industry", "field"])
+    # Plot autocorrelation plot
+    acf_fig = dviz.plot_acf(AAPL_df, security="AAPL_close")
+    
+    # Plot partial-autocorrelation plot
+    pacf_fig = dviz.plot_pacf(AAPL_df, security="AAPL_close")
 
-# Plot Sankey diagram 
-fig = plot_irene_sankey_diagram(node_map, link, title = "Irene-Sankey Demo", node_config={
-        "pad": 10,
-        "line": dict(color="black", width=1),
-    }
-)
-fig.show()
-```
-!!! tip
+    #acf_fig.show() 
+    pacf_fig.show()
+    ```
+    
+=== "Correlation Matrix"
 
-    You can use `node_map` and `link` with your own Plotly’s Sankey diagram functions.
+    ![Demo plot_correlation_matrix](assets/plot_correlation_matrix_screenshot.png){ width=800 }
+
+    Here is the code to generate the correlation matrix plot: 
+    
+
+    ```py title="plutus_plot_correlation_matrix_demo.py" linenums="1"
+
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.data_visualizations as dviz
+
+    # Fetch stock data
+    AAPL_df = dacq.fetch_yahoo_finance_data("AAPL", start_date="2015-01-01", end_date="2021-01-01")   
+    MSFT_df = dacq.fetch_yahoo_finance_data("MSFT", start_date="2015-01-01", end_date="2021-01-01")   
+    GOOG_df = dacq.fetch_yahoo_finance_data("GOOG", start_date="2015-01-01", end_date="2021-01-01")
+
+    stock_df = dacq.combine_dataframes([AAPL_df, MSFT_df, GOOG_df])
+
+    # Plot correlation matrix
+    fig = dviz.plot_correlation_matrix(
+        data=stock_df,
+        securities=["AAPL_close", "MSFT_close", "GOOG_close"],
+    )
+
+    fig.show() 
+    ```
+
+=== "Time-series Plot"
+
+    ![Demo plot_timeseries](assets/plot_timeseries_screenshot.png){ width=800 }
+
+    Here is the code to generate the time-series plot: 
+
+    ```py title="plutus_plot_timeseries_demo.py" linenums="1"
+
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.data_visualizations as dviz
+
+    # Fetch stock data
+    AAPL_df = dacq.fetch_yahoo_finance_data("AAPL", start_date="2015-01-01", end_date="2021-01-01")   
+    MSFT_df = dacq.fetch_yahoo_finance_data("MSFT", start_date="2015-01-01", end_date="2021-01-01")   
+    GOOG_df = dacq.fetch_yahoo_finance_data("GOOG", start_date="2015-01-01", end_date="2021-01-01")
+
+    stock_df = dacq.combine_dataframes([AAPL_df, MSFT_df, GOOG_df])
+
+    # Plot time-series
+    fig = dviz.plot_timeseries(
+        data=stock_df,
+        securities=["AAPL_close", "MSFT_close", "GOOG_close"],
+        plot_title="Stock Prices",
+        x_label="Date",
+        y_label="Price",
+        line_colors=["#6F5AD6", "#E28A37", "#328847"],
+    )
+
+    fig.show()   
+    ```
 
 
-Thank you for exploring our demo! We hope this example has given you a clear understanding of how to utilize our package and integrate its features into your projects. Whether you're just getting started or diving deeper, our goal is to make your experience as seamless and productive as possible.
+=== "Dual Y-Axis Plot"
+
+    ![Demo plot_dual_timeseries](assets/plot_dual_timeseries_screenshot.png){ width=800 }
+
+    Here is the code to generate the dual y-axis time-series plot: 
+    
+
+    ```py title="plutus_plot_dual_timeseries_demo.py" linenums="1"
+
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.data_visualizations as dviz
+
+    # Fetch stock data
+    MSFT_df = dacq.fetch_yahoo_finance_data("MSFT", start_date="2015-01-01", end_date="2021-01-01")   
+    GOOG_df = dacq.fetch_yahoo_finance_data("GOOG", start_date="2015-01-01", end_date="2021-01-01")
+
+    stock_df = dacq.combine_dataframes([MSFT_df, GOOG_df])
+
+    # Plot dual y-axis time-series
+    fig = dviz.plot_dual_timeseries(
+        data=stock_df,
+        securities=["GOOG_close", "MSFT_close"],
+        plot_title="Stock Prices",
+        line_colors=["#3C8BE5", "#C93F8C"],
+    )
+
+    fig.show() 
+    ```
+
+Thank you for exploring our demo! We hope this example has given you a brief understanding of how to utilize our package and integrate its features into your projects. Whether you're just getting started or diving deeper, our goal is to make your experience as seamless and productive as possible.
 
 Happy coding!
 

@@ -70,7 +70,7 @@ def fetch_yahoo_finance_data(
     start_date: str = "2010-01-01",
     end_date: Optional[str] = None,
     ticker_prefix: bool = True,
-    column_names: List[str] = ["close_adj", "close", "high", "low", "open", "volume"],
+    column_suffix: List[str] = ["close_adj", "close", "high", "low", "open", "volume"],
 ) -> pd.DataFrame:
     """
     Fetch historical data for a ticker from Yahoo Finance.
@@ -80,7 +80,7 @@ def fetch_yahoo_finance_data(
         start_date (str, optional): Start date for the data. Defaults to "2010-01-01".
         end_date (Optional[str], optional): End date for the data. Defaults to None (current date).
         ticker_prefix (bool, optional): If True, prefixes columns with the ticker name. Defaults to True.
-        column_names (List[str], optional): List of column names to use. Defaults to standard financial data columns.
+        column_suffix (List[str], optional): List of column suffix to use. Defaults to standard financial data column suffixes.
 
     Returns:
         pd.DataFrame: DataFrame containing historical data.
@@ -91,13 +91,13 @@ def fetch_yahoo_finance_data(
     if end_date is None:
         end_date = date.today().strftime("%Y-%m-%d")
     data = yf.download(ticker, start=start_date, end=end_date, progress=False)
-    if len(column_names) != len(data.columns):
+    if len(column_suffix) != len(data.columns):
         raise ValueError(
-            f"Expected {len(data.columns)} column names, got {len(column_names)}."
+            f"Expected {len(data.columns)} column names, got {len(column_suffix)}."
         )
     data.index.name = "date"
     data.columns = (
-        [f"{ticker}_{col}" for col in column_names] if ticker_prefix else column_names
+        [f"{ticker}_{col}" for col in column_suffix] if ticker_prefix else column_suffix
     )
     return data
 
@@ -145,7 +145,7 @@ def fetch_and_store_tickers(
     start_date: str = "2010-01-01",
     end_date: Optional[str] = None,
     ticker_prefix: bool = True,
-    column_names: List[str] = ["close_adj", "close", "high", "low", "open", "volume"],
+    column_suffix: List[str] = ["close_adj", "close", "high", "low", "open", "volume"],
     join_type: str = "inner",
 ) -> tuple[pd.DataFrame, List[str]]:
     """
@@ -157,7 +157,7 @@ def fetch_and_store_tickers(
         start_date (str, optional): Start date for fetching data. Defaults to "2010-01-01".
         end_date (Optional[str], optional): End date for fetching data. Defaults to None (current date).
         ticker_prefix (bool, optional): If True, prefixes columns with ticker names. Defaults to True.
-        column_names (List[str], optional): List of column names to use. Defaults to standard financial data columns.
+        column_suffix (List[str], optional): List of column suffix to use. Defaults to standard financial data column suffixes.
         join_type (str, optional): Type of join operation for combining data ('inner', 'outer'). Defaults to "inner".
 
     Returns:
@@ -175,7 +175,7 @@ def fetch_and_store_tickers(
     for ticker in tickers:
         try:
             data = fetch_yahoo_finance_data(
-                ticker, start_date, end_date, ticker_prefix, column_names
+                ticker, start_date, end_date, ticker_prefix, column_suffix
             )
             file_path = os.path.join(output_dir, f"{ticker}.csv")
             data.to_csv(file_path)
@@ -194,17 +194,17 @@ def read_and_combine_ticker_files(
     directory_path: str,
     tickers: List[str],
     date_column: str = "date",
-    value_column: Optional[str] = None,
+    column_suffix: Optional[List[str]] = None,
     join_type: str = "inner",
 ) -> pd.DataFrame:
     """
-    Read and combine data files for specified tickers from a directory.
+    Read and combine data files for specified tickers from a directory, selecting columns based on suffix.
 
     Args:
         directory_path (str): Path to the directory containing CSV files.
         tickers (List[str]): List of ticker symbols to combine.
         date_column (str, optional): Name of the date column to set as index. Defaults to "date".
-        value_column (Optional[str], optional): Specific column to extract from each file. If None, uses all columns.
+        column_suffix (Optional[List[str]], optional): List of column suffixes to select from the file. If None, uses all columns.
         join_type (str, optional): Type of join operation ('inner', 'outer', etc.). Defaults to "inner".
 
     Returns:
@@ -212,7 +212,7 @@ def read_and_combine_ticker_files(
 
     Raises:
         FileNotFoundError: If the directory does not exist or no files are found for the specified tickers.
-        ValueError: If no valid data could be read from the files.
+        ValueError: If no valid data could be read from the files or if no matching columns are found.
     """
     if not os.path.exists(directory_path):
         raise FileNotFoundError(f"Directory {directory_path} does not exist.")
@@ -230,10 +230,18 @@ def read_and_combine_ticker_files(
             data = pd.read_csv(
                 file_path, parse_dates=[date_column], index_col=date_column
             )
-            if value_column:
-                data = data[[value_column]]
-                ticker_name = os.path.basename(file_path).replace(".csv", "")
-                data.columns = [ticker_name]
+            if column_suffix:
+                # Dynamically select columns based on column_suffix
+                selected_columns = [
+                    col
+                    for col in data.columns
+                    if any(suffix in col for suffix in column_suffix)
+                ]
+                if not selected_columns:
+                    raise ValueError(
+                        f"No columns matching the suffixes {column_suffix} found in {file_path}."
+                    )
+                data = data[selected_columns]
             dataframes.append(data)
         except Exception as e:
             logger.warning(f"Error reading {file_path}: {e}")
