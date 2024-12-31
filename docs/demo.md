@@ -31,29 +31,216 @@ pairs_df = dgen.pairs_identification(
 print(pairs_df)
 ```
 
-## PLUTUS Tests
+## PLUTUS Stationarity Tests
 
-The PLUTUS toolkit includes comprehensive tests for stationarity, cointegration, and data validation to ensure the accuracy and reliability of pair-trading strategies.
+PLUTUS provides a comprehensive suite of statistical tests to assess the properties of financial time-series data, ensuring robust pair-trading strategies. These tests help evaluate stationarity:
 
-### Stationarity Tests
+- **Augmented Dickey-Fuller (ADF)** evaluates whether a series is stationary or contains a unit root.
+- **Phillips-Perron (PP)** is a non-parametric test for stationarity.
+- **Kwiatkowski-Phillips-Schmidt-Shin (KPSS)** checks if a series is stationary around a deterministic trend.
 
-#### Augmented Dickey-Fuller Test (ADF)
+### Augmented Dickey-Fuller
 
-The ADF test checks for stationarity in a time-series.
+=== "ADF"
 
-=== "ADF Test"
+    ```py title="plutus_stationarity_test_ADF_demo.py" linenums="1"
 
-    ```py 
-    from plutus_pairtrading.tests.stationarity_tests import augmented_dickey_fuller_test
-    import pandas as pd
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.tests as tsts
 
-    # Load sample data
-    data = pd.read_csv("data/tickers/AAPL.csv", index_col="date", parse_dates=True)
+    # Fetch stock data
+    TSLA_df = dacq.fetch_yahoo_finance_data("TSLA", start_date="2020-01-01", end_date="2024-12-30")
 
     # Perform ADF Test
-    result = augmented_dickey_fuller_test(
-        data=data,
-        security="close",
+    ADF_result = tsts.augmented_dickey_fuller_test(
+        data=TSLA_df,
+        security="TSLA_close",
+        trend="constant",
+        significance_level=0.05,
+    )
+
+    print(ADF_result)
+    ```
+
+
+=== "Result"
+
+    ```py
+    {
+        "Statistic": -1.93, 
+        "p-Value": 0.318, 
+        "Stationary": False, 
+        "Lags": 10, 
+        "Trend": "constant", 
+        "Critical Values": {
+            "1%": -3.44, 
+            "5%": -2.86,
+            "10%": -2.57
+            }
+    }
+    ```
+### Phillips-Perron
+
+=== "PP"
+
+    ```py title="plutus_stationarity_test_PP_demo.py" linenums="1"
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.tests as tsts
+
+    # Fetch stock data
+    TSLA_df = dacq.fetch_yahoo_finance_data("TSLA", start_date="2020-01-01", end_date="2024-12-30")
+
+    # Perform PP Test
+    PP_result = tsts.philips_perron_test(
+        data=TSLA_df,
+        security="TSLA_close",
+        trend="constant",
+        significance_level=0.05,
+    )
+
+    print(PP_result)
+    ```
+=== "Result"
+
+    ```py
+    {
+        "Statistic": -0.49,
+        "p-Value": 0.89,
+        "Stationary": False,
+        "Lags": 1255,
+        "Trend": "constant",
+        "Critical Values": {
+            "1%": -3.44,
+            "5%": -2.86,
+            "10%": -2.57
+        }
+    }
+    ```
+
+### Kwiatkowski-Phillips-Schmidt-Shin
+
+=== "KPSS"
+
+    ```py title="plutus_stationarity_test_PP_demo.py" linenums="1"
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.tests as tsts
+
+    # Fetch stock data 
+    TSLA_df = dacq.fetch_yahoo_finance_data("TSLA", start_date="2020-01-01", end_date="2024-12-30")
+
+    # Perform KPSS Test
+    KPSS_result = tsts.KPSS_test(
+        data=TSLA_df,
+        security="TSLA_close",
+        trend="constant",
+        significance_level=0.05,
+    )
+
+    print(KPSS_result)
+    ```
+=== "Result"
+
+    ```py
+    {
+        "Statistic": 1.51,
+        "p-Value": 0.0002,
+        "Stationary": False,
+        "Lags": 20,
+        "Trend": "constant",
+        "Critical Values": {
+            "1%": 0.743,
+            "5%": 0.461,
+            "10%": 0.348
+        }
+    }
+
+    ```
+
+
+## PLUTUS Cointegration Tests
+
+PLUTUS provides a comprehensive suite of statistical tests to assess the properties of financial time-series data, ensuring robust pair-trading strategies. These tests help evaluate integration order, and cointegration between time-series. Available tests are:
+
+- **Engle-Granger** performs test for cointegration between two time-series.
+- **Phillips-Ouliaris** is another  method to assess cointegration between two series.
+- **Johansen** evaluates cointegration among multiple time-series.
+
+These tests are critical for identifying relationships between time-series and determining their suitability for pair-trading strategies.
+
+### Engle-Granger
+
+=== "Engle-Granger"
+
+    ```py title="plutus_pairtrading_cointegration_EG_test.py" linenums="1"
+
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.tests as tsts
+
+    # Fetch stock data for multiple securities
+    TSLA_df = dacq.fetch_yahoo_finance_data("TSLA", start_date="2020-01-01", end_date="2024-12-30")
+    GE_df = dacq.fetch_yahoo_finance_data("GE", start_date="2020-01-01", end_date="2024-12-30")
+
+    # Combine the historical data of the stocks
+    stock_df = dacq.combine_dataframes([TSLA_df, GE_df])
+
+    # Perform Engle-Granger Test
+    result = tsts.engle_granger_cointegration_test(
+        data=stock_df,
+        securities=["TSLA_close", "GE_close"],
+        trend="constant",
+        significance_level=0.05,
+    )
+
+    print(result)
+    ```
+=== "Result"
+
+    ```py
+    {
+        "Cointegrated": False,
+        "Cointegrated Vector": {
+            "TSLA_close": 1.0,
+            "GE_close": -0.48711,
+            "const": -174.772825
+        },
+        "Critical Value": -3.34,
+        "Statistic": -2.25,
+        "Trend": "c",
+        "p-Value": 0.3986,
+        "spread_TSLA_close_GE_close": {
+            "2020-01-02": -175.05,
+            "2020-01-03": -174.30,
+            "2020-01-06": -174.14,
+            "2020-01-07": -172.76,
+            "2020-01-08": -170.95,
+            "...": "...",
+            "2024-12-24": 203.97,
+            "2024-12-26": 195.50,
+            "2024-12-27": 174.04
+        }
+    }
+    ```
+
+### Phillips-Ouliaris
+
+=== "Phillips-Ouliaris"
+
+    ```py title="plutus_pairtrading_cointegration_PO_test.py" linenums="1"
+
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.tests as tsts
+
+    # Fetch stock data for multiple securities
+    TSLA_df = dacq.fetch_yahoo_finance_data("TSLA", start_date="2020-01-01", end_date="2024-12-30")
+    GE_df = dacq.fetch_yahoo_finance_data("GE", start_date="2020-01-01", end_date="2024-12-30")
+
+    # Combine the historical data of the stocks
+    stock_df = dacq.combine_dataframes([TSLA_df, GE_df])
+
+    # Perform Engle-Granger Test
+    result = tsts.phillips_ouliaris_cointegration_test(
+        data=stock_df,
+        securities=["TSLA_close", "GE_close"],
         trend="constant",
         significance_level=0.05,
     )
@@ -61,41 +248,107 @@ The ADF test checks for stationarity in a time-series.
     print(result)
     ```
 
+=== "Result"
 
-=== "Expected Output"
-
-    ```json
+    ```py
     {
-        "Statistic": -3.5,
-        "p-Value": 0.01,
-        "Stationary": True,
-        "Lags": 5,
-        "Trend": "constant",
-        "Critical Values": {"1%": -3.43, "5%": -2.86, "10%": -2.57},
+        "Statistic": -2.0986,
+        "p-Value": 0.4757,
+        "Critical Value": -3.3435,
+        "Trend": "c",
+        "Cointegrated Vector": {
+            "TSLA_close": 1.0,
+            "GE_close": -0.48711,
+            "const": -174.772825
+        },
+        "Cointegrated": False,
+        "spread_TSLA_close_GE_close": {
+            "2020-01-02": -175.0528,
+            "2020-01-03": -174.2999,
+            "2020-01-06": -174.1439,
+            "2020-01-07": -172.7574,
+            "2020-01-08": -170.9517,
+            "...": "...",
+            "2024-12-24": 203.9726,
+            "2024-12-26": 195.5012,
+            "2024-12-27": 174.0395
+        }
     }
+
+    ```
+
+### Johannes
+
+=== "Johannes"
+
+    ```py title="plutus_pairtrading_cointegration_J_test.py" linenums="1"
+
+    import plutus_pairtrading.data_acquisitions as dacq
+    import plutus_pairtrading.tests as tsts
+
+    # Fetch stock data for multiple securities
+    TSLA_df = dacq.fetch_yahoo_finance_data("TSLA", start_date="2020-01-01", end_date="2024-12-30")
+    GE_df = dacq.fetch_yahoo_finance_data("GE", start_date="2020-01-01", end_date="2024-12-30")
+
+    # Combine the historical data of the stocks
+    stock_df = dacq.combine_dataframes([TSLA_df, GE_df])
+
+    # Perform Engle-Granger Test
+    result = tsts.phillips_ouliaris_cointegration_test(
+        data=stock_df,
+        securities=["TSLA_close", "GE_close"],
+        trend="constant",
+        significance_level=0.05,
+    )
+
+    print(result)
+    ```
+
+=== "Result"
+
+    ```py
+    {
+        "Statistics and Critical Values": [
+            {
+                "Null Hypothesis": "r<=0",
+                "Statistic": 20.9772,
+                "Critical Value (95%)": 29.7961
+            },
+            {
+                "Null Hypothesis": "r<=1",
+                "Statistic": 6.7329,
+                "Critical Value (95%)": 15.4943
+            },
+            {
+                "Null Hypothesis": "r<=2",
+                "Statistic": 0.0030,
+                "Critical Value (95%)": 3.8415
+            }
+        ],
+        "Eigenvalues": [0.0112948, 0.0053524, 0.0000024],
+        "Eigenvectors": [
+            [0.0187234, 0.0059437, -0.0072621],
+            [0.0370668, -0.0278356, -0.0166753],
+            [-0.0653901, 0.0167287, 0.0012695]
+        ],
+        "Trend": "constant",
+        "#Cointegrated Vectors": 0,
+        "Spread": {
+            "2020-01-02": -2.1689,
+            "2020-01-03": -2.0979,
+            "2020-01-06": -2.0945,
+            "2020-01-07": -2.0663,
+            "2020-01-08": -2.1362,
+            "...": "...",
+            "2024-12-24": -1.8717,
+            "2024-12-26": -2.0534,
+            "2024-12-27": -2.3266
+        }
+    }
+
     ```
 
 
-#### Phillips-Perron Test (PP)
-
-The PP test is another method for assessing stationarity.
-
-
-from plutus_pairtrading.tests.stationarity_tests import philips_perron_test
-import pandas as pd
-
-# Load sample data
-data = pd.read_csv("data/tickers/GOOG.csv", index_col="date", parse_dates=True)
-
-# Perform PP Test
-result = philips_perron_test(
-    data=data,
-    security="close",
-    trend="constant",
-    significance_level=0.05,
-)
-
-print(result)
 
 
 ## PLUTUS Data Acquisition 
