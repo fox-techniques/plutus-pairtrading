@@ -81,7 +81,30 @@ pip install plutus-pairtrading
 Here’s a quick example to use **PLUTUS** pair-trading tookit.
 
 ```python
+  import plutus_pairtrading.data_acquisitions as dacq
+  import plutus_pairtrading.data_generations as dgen
+  import plutus_pairtrading.data_visualizations as dviz
 
+  # Fetch stock data for multiple securities
+  AAPL_df = dacq.fetch_yahoo_finance_data("AAPL", start_date="2015-01-01", end_date="2021-01-01")
+  MSFT_df = dacq.fetch_yahoo_finance_data("MSFT", start_date="2015-01-01", end_date="2021-01-01")
+  GOOG_df = dacq.fetch_yahoo_finance_data("GOOG", start_date="2015-01-01", end_date="2021-01-01")
+  TSLA_df = dacq.fetch_yahoo_finance_data("TSLA", start_date="2015-01-01", end_date="2021-01-01")
+
+  # Combine the data into a single DataFrame
+  stock_df = dacq.combine_dataframes([AAPL_df, MSFT_df, GOOG_df, TSLA_df])
+
+  # Perform pair identification
+  pairs_df = dgen.pairs_identification(
+      data=stock_df,
+      stationarity_method="ADF",
+      cointegration_method="phillips-ouliaris",
+      stationarity_significance_level=0.05,
+      coint_significance_level=0.05,
+  )
+
+  # Display the identified pairs
+  print(pairs_df)
 ```
 
 ## Contribution
