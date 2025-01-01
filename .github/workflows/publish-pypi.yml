@@ -126,6 +126,8 @@ jobs:
     permissions:
       contents: read
       actions: write
+      id-token: write
+      
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
