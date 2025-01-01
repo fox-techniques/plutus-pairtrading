@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import yfinance as yf
 from datetime import date
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 from functools import reduce
 
 from ..utils.performance import _log_execution_time
@@ -70,7 +70,7 @@ def fetch_yahoo_finance_data(
     start_date: str = "2010-01-01",
     end_date: Optional[str] = None,
     ticker_prefix: bool = True,
-    column_suffix: List[str] = ["close_adj", "close", "high", "low", "open", "volume"],
+    column_mapping: Dict[str, str] = None,
 ) -> pd.DataFrame:
     """
     Fetch historical data for a ticker from Yahoo Finance.
@@ -80,26 +80,57 @@ def fetch_yahoo_finance_data(
         start_date (str, optional): Start date for the data. Defaults to "2010-01-01".
         end_date (Optional[str], optional): End date for the data. Defaults to None (current date).
         ticker_prefix (bool, optional): If True, prefixes columns with the ticker name. Defaults to True.
-        column_suffix (List[str], optional): List of column suffix to use. Defaults to standard financial data column suffixes.
+        column_mapping (Dict[str, str], optional): Mapping of Yahoo Finance's column names to desired names.
+            Example: {"Adj Close": "close_adj", "Close": "close", "High": "high", "Low": "low", "Open": "open", "Volume": "volume"}.
 
     Returns:
         pd.DataFrame: DataFrame containing historical data.
 
     Raises:
-        ValueError: If column names do not match the data structure from Yahoo Finance.
+        ValueError: If none of the expected columns are found in the data.
     """
     if end_date is None:
         end_date = date.today().strftime("%Y-%m-%d")
-    data = yf.download(ticker, start=start_date, end=end_date, progress=False)
-    if len(column_suffix) != len(data.columns):
+
+    # Default column mapping
+    if column_mapping is None:
+        column_mapping = {
+            "Close": "close",
+            "Open": "open",
+            "High": "high",
+            "Low": "low",
+            "Volume": "volume",
+        }
+
+    # Fetch data from Yahoo Finance
+    raw_data = yf.download(ticker, start=start_date, end=end_date, progress=False)
+
+    # Handle MultiIndex columns
+    if isinstance(raw_data.columns, pd.MultiIndex):
+        raw_data.columns = raw_data.columns.get_level_values(0)
+
+    # Map and filter columns based on `column_mapping`
+    available_columns = {
+        yahoo_col: column_mapping[yahoo_col]
+        for yahoo_col in raw_data.columns
+        if yahoo_col in column_mapping
+    }
+
+    if not available_columns:
         raise ValueError(
-            f"Expected {len(data.columns)} column names, got {len(column_suffix)}."
+            f"None of the expected columns ({list(column_mapping.keys())}) were found in the data."
         )
-    data.index.name = "date"
-    data.columns = (
-        [f"{ticker}_{col}" for col in column_suffix] if ticker_prefix else column_suffix
-    )
-    return data
+
+    # Rename and reorder columns based on the mapping
+    renamed_data = raw_data.rename(columns=available_columns)
+    renamed_data = renamed_data[list(available_columns.values())]
+
+    # Add ticker prefix if required
+    if ticker_prefix:
+        renamed_data.columns = [f"{ticker}_{col}" for col in renamed_data.columns]
+
+    renamed_data.index.name = "date"
+    return renamed_data
 
 
 @_log_execution_time
