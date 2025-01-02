@@ -176,7 +176,7 @@ def fetch_and_store_tickers(
     start_date: str = "2010-01-01",
     end_date: Optional[str] = None,
     ticker_prefix: bool = True,
-    column_suffix: List[str] = ["close_adj", "close", "high", "low", "open", "volume"],
+    column_mapping: Dict[str, str] = None,
     join_type: str = "inner",
 ) -> tuple[pd.DataFrame, List[str]]:
     """
@@ -188,7 +188,8 @@ def fetch_and_store_tickers(
         start_date (str, optional): Start date for fetching data. Defaults to "2010-01-01".
         end_date (Optional[str], optional): End date for fetching data. Defaults to None (current date).
         ticker_prefix (bool, optional): If True, prefixes columns with ticker names. Defaults to True.
-        column_suffix (List[str], optional): List of column suffix to use. Defaults to standard financial data column suffixes.
+        column_mapping (Dict[str, str], optional): Mapping of Yahoo Finance's column names to desired names.
+            Example: {"Close": "close", "Open": "open", "High": "high", "Low": "low", "Volume": "volume"}.
         join_type (str, optional): Type of join operation for combining data ('inner', 'outer'). Defaults to "inner".
 
     Returns:
@@ -198,6 +199,8 @@ def fetch_and_store_tickers(
     """
     if end_date is None:
         end_date = date.today().strftime("%Y-%m-%d")
+
+    # Ensure the output directory exists
     ensure_directory_exists(output_dir)
 
     failed_tickers = []
@@ -205,17 +208,27 @@ def fetch_and_store_tickers(
 
     for ticker in tickers:
         try:
+            # Fetch data for the ticker
             data = fetch_yahoo_finance_data(
-                ticker, start_date, end_date, ticker_prefix, column_suffix
+                ticker=ticker,
+                start_date=start_date,
+                end_date=end_date,
+                ticker_prefix=ticker_prefix,
+                column_mapping=column_mapping,
             )
+
+            # Save to CSV
             file_path = os.path.join(output_dir, f"{ticker}.csv")
             data.to_csv(file_path)
             logger.info(f"Data for {ticker} saved to {file_path}")
+
+            # Append to the list of DataFrames
             dataframes.append(data)
         except Exception as e:
             logger.warning(f"Failed to fetch data for {ticker}: {e}")
             failed_tickers.append(ticker)
 
+    # Combine all DataFrames
     combined_data = combine_dataframes(dataframes, join_type=join_type)
     return combined_data, failed_tickers
 
@@ -225,17 +238,18 @@ def read_and_combine_ticker_files(
     directory_path: str,
     tickers: List[str],
     date_column: str = "date",
-    column_suffix: Optional[List[str]] = None,
+    column_mapping: Optional[Dict[str, str]] = None,
     join_type: str = "inner",
 ) -> pd.DataFrame:
     """
-    Read and combine data files for specified tickers from a directory, selecting columns based on suffix.
+    Read and combine data files for specified tickers from a directory, selecting columns based on mapping.
 
     Args:
         directory_path (str): Path to the directory containing CSV files.
         tickers (List[str]): List of ticker symbols to combine.
         date_column (str, optional): Name of the date column to set as index. Defaults to "date".
-        column_suffix (Optional[List[str]], optional): List of column suffixes to select from the file. If None, uses all columns.
+        column_mapping (Optional[Dict[str, str]], optional): Mapping of column names to desired names. If None, uses all columns.
+            Example: {"Close": "close", "Open": "open", "High": "high", "Low": "low", "Volume": "volume"}.
         join_type (str, optional): Type of join operation ('inner', 'outer', etc.). Defaults to "inner".
 
     Returns:
@@ -261,18 +275,19 @@ def read_and_combine_ticker_files(
             data = pd.read_csv(
                 file_path, parse_dates=[date_column], index_col=date_column
             )
-            if column_suffix:
-                # Dynamically select columns based on column_suffix
-                selected_columns = [
-                    col
-                    for col in data.columns
-                    if any(suffix in col for suffix in column_suffix)
-                ]
-                if not selected_columns:
+            if column_mapping:
+                # Dynamically map and filter columns based on column_mapping
+                available_columns = {
+                    orig_col: new_col
+                    for orig_col, new_col in column_mapping.items()
+                    if orig_col in data.columns
+                }
+                if not available_columns:
                     raise ValueError(
-                        f"No columns matching the suffixes {column_suffix} found in {file_path}."
+                        f"No columns matching the mapping {list(column_mapping.keys())} found in {file_path}."
                     )
-                data = data[selected_columns]
+                data = data.rename(columns=available_columns)
+                data = data[list(available_columns.values())]
             dataframes.append(data)
         except Exception as e:
             logger.warning(f"Error reading {file_path}: {e}")
