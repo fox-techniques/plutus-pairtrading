@@ -16,6 +16,7 @@ arch = "^7.2.0"
 seaborn = "^0.13.2"
 numpy = "^2.2.0"
 plotly = "^5.24.1"
+nbformat = "^5.10.4"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -38,6 +39,10 @@ plotly = "^5.24.1"
 jupyter = "^1.0.0"
 ipykernel = "^6.25.2"
 
+
+
+[tool.poetry.group.notebook.dependencies]
+nbformat = "^5.10.4"
 
 [build-system]
 requires = ["poetry-core"]
