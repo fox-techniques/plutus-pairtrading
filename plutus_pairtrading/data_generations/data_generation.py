@@ -40,10 +40,6 @@ def validate_securities(data: pd.DataFrame, securities: List[str]) -> None:
         raise ValueError(f"Securities not found in data: {missing}")
 
 
-import numpy as np
-import pandas as pd
-
-
 @_log_execution_time
 def generate_random_stock_prices(
     ticker_label: str = "TICKER",
@@ -67,7 +63,7 @@ def generate_random_stock_prices(
     Returns:
         pd.DataFrame: DataFrame with a "date" index and "AAPL" column of prices.
     """
-    np.random.seed(42)  # For reproducibility
+    np.random.seed(42)
 
     # Generate daily returns using random normal distribution
     daily_returns = np.random.normal(mu, sigma, num_days)
@@ -151,6 +147,7 @@ def return_exps(
     securities: List[str],
     return_only_exps: bool = True,
     rename_exps: bool = True,
+    drop_exp_logs_prefix: bool = True,
 ) -> pd.DataFrame:
     """
     Computes the exponential transformation of prices for specified securities.
@@ -160,20 +157,40 @@ def return_exps(
         securities (List[str]): List of securities to compute exponentials for.
         return_only_exps (bool, optional): If True, retains only exponential-transformed columns. Defaults to True.
         rename_exps (bool, optional): If True, renames exponential columns to original names. Defaults to True.
+        drop_exp_logs_prefix (bool, optional): If True, renames columns with prefix 'exp_log_<ticker>' back to '<ticker>'. Defaults to True.
 
     Returns:
         pd.DataFrame: DataFrame with exponential-transformed prices.
     """
-    validate_securities(data, securities)
+    validate_securities(data, securities)  # Validate securities exist in the data
     data_exps = data.copy()
+    transformed_columns = {}
 
+    # Compute exponential transformation for each security
     for sec in securities:
-        data_exps[f"exp_{sec}"] = np.exp(data[sec])
+        if sec not in data.columns:
+            raise ValueError(f"Column '{sec}' not found in the data.")
 
-        if return_only_exps:
-            data_exps.drop(columns=[sec], inplace=True)
-            if rename_exps:
-                data_exps.rename(columns={f"exp_{sec}": sec}, inplace=True)
+        exp_col = f"exp_{sec}"
+        data_exps[exp_col] = np.exp(data[sec])
+        transformed_columns[sec] = exp_col
+
+    # Retain only exponential-transformed columns if specified
+    if return_only_exps:
+        data_exps = data_exps[list(transformed_columns.values())]
+
+        # Rename exponential columns back to original names if specified
+        if rename_exps:
+            data_exps.rename(
+                columns={v: k for k, v in transformed_columns.items()}, inplace=True
+            )
+
+    # Rename columns with 'exp_log_' prefix to the ticker name if specified
+    if drop_exp_logs_prefix:
+        data_exps.columns = [
+            col.replace("exp_log_", "") if col.startswith("exp_log_") else col
+            for col in data_exps.columns
+        ]
 
     return data_exps
 
