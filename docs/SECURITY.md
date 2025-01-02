@@ -6,7 +6,7 @@ We support updates for the following versions:
 
 | Version | Supported            |
 | ------- | -------------------- |
-| 1.0.x   | :material-check:     |
+| 1.1.x   | :material-check:     |
 
 
 ## Reporting a Vulnerability
