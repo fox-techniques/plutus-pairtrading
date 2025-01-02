@@ -33,16 +33,6 @@ jobs:
           echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Check if GitHub Release Exists
-        id: check_release
-        run: |
-          if gh release view ${{ steps.extract_tag.outputs.tag_name }} > /dev/null 2>&1; then
-            echo "skip=true" >> "$GITHUB_ENV"
-            exit 1
-          else
-            echo "skip=false" >> "$GITHUB_ENV"
-          fi
-
       - name: Fetch PyPI Version
         id: check_pypi
         run: |
@@ -127,7 +117,6 @@ jobs:
       contents: read
       actions: write
       id-token: write
-      
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
@@ -139,32 +128,3 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_TOKEN }}
-
-  github_release:
-    name: Create GitHub Release
-    needs: [details, setup_and_build]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-
-      - name: Ensure dist is not empty
-        run: |
-          if [ -z "$(ls -A dist)" ]; then
-            echo "No distribution files found to upload."
-            exit 1
-          fi
-
-      - name: Create GitHub Release
-        run: |
-          gh release create ${{ needs.details.outputs.tag_name }} dist/* --title ${{ needs.details.outputs.tag_name }} --generate-notes
