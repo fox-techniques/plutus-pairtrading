@@ -4,7 +4,7 @@ setup(
     name="plutus-pairtrading",
     version="1.0.0",
     author="FOX Techniques",
-    author_email="contact+plutus@fox-techniques.com",
+    author_email="ali.nabbi@fox-techniques.com",
     description="PLUTUS is a Python-based toolkit for performing pair-trading analysis.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

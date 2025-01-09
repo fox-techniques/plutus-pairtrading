@@ -41,7 +41,7 @@ nav:
 extra:
   social:
     - icon: fontawesome/solid/envelope
-      link: mailto:contact+plutus@fox-techniques.com?subject=Inquiry%20about%20PLUTUSt%20Pair-Tradingt%20Toolkit
+      link: mailto:contact@fox-techniques.com?subject=Inquiry%20about%20PLUTUSt%20Pair-Tradingt%20Toolkit
     - icon: fontawesome/brands/github
       link: https://github.com/fox-techniques/plutus-pairtrading
     - icon: fontawesome/brands/discord
