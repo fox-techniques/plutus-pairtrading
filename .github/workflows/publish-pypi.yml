@@ -19,6 +19,8 @@ jobs:
     name: Extract Tag Details and Pre-checks
     runs-on: ubuntu-latest
     environment: release-with-approval
+    permissions:
+      contents: read
     outputs:
       new_version: ${{ steps.extract_tag.outputs.new_version }}
       tag_name: ${{ steps.extract_tag.outputs.tag_name }}
@@ -58,6 +60,8 @@ jobs:
     name: Test Backward Compatibility
     needs: details
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
@@ -81,6 +85,8 @@ jobs:
     name: Setup and Build
     needs: [details, test_backward_compatibility]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -125,6 +131,6 @@ jobs:
           path: dist/
 
       - name: Publish Distribution
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@67339c736fd9354cd4f8cb0b744f2b82a74b5c70
         with:
           password: ${{ secrets.PYPI_TOKEN }}
