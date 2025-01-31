@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Add GitHub Actions workflow for weekly changelog generation and release ([b78bc52](https://github.com/fox-techniques/plutus-pairtrading/commit/b78bc522fa0b9bf5a5f59fdb196598f82a2b2ef6) by A Nova).
 - Address CodeQL alerts: Update GitHub Actions workflow to add permissions for content read access and specify action version for PyPI publishing ([03cdfb7](https://github.com/fox-techniques/plutus-pairtrading/commit/03cdfb77a432f051f6592c6b0528b7d6e3a87278) by A Nova).
 
 <!-- insertion marker -->
