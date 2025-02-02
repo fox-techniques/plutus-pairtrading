@@ -1,14 +1,16 @@
-# Installation 
+# 📥 Installation 
 
-Prerequisites:
 
-- Python 3.10 or higher
+**Prerequisites:**
 
-## with pip <small>recommended</small> { #with-pip data-toc-label="with pip" }
+- 🐍 Python 3.10 or higher 
+- 📦 pip or [Poetry] 
 
-PLUTUS is published as a python package and can be installed with
-`pip`, ideally by using a [virtual environment]. Open up a terminal and install
-PLUTUS with:
+
+## 📦 pip
+
+**PLUTUS** is published as a python package and can be installed with
+`pip`, ideally by using a [virtual environment]. Open up a terminal and install with:
 
 === "Latest"
 
@@ -39,7 +41,7 @@ PLUTUS with:
         pip install -r requirements.txt
         ```
 
-This will automatically install compatible versions of all dependencies. PLUTUS always strives to support the latest versions, so there's no need to install the dependencies separately. PLUTUS dependencies are listed below: 
+This will automatically install compatible versions of all dependencies. **PLUTUS** always strives to support the latest versions, so there's no need to install the dependencies separately. PLUTUS dependencies are listed below: 
 
   [numpy] | [pandas] | [plotly] | [requests] | [matplotlib] | [yfinance] | [arch] | [seaborn]
 
@@ -58,9 +60,9 @@ This will automatically install compatible versions of all dependencies. PLUTUS 
   [Using Python's pip to Manage Your Projects' Dependencies]: https://realpython.com/what-is-pip/
 
 
-## with git
+## 🐙 Git
 
-PLUTUS can be directly used from [GitHub] by cloning the
+**PLUTUS** can be directly used from [GitHub] by cloning the
 repository into a subfolder of your project root which might be useful if you
 want to use the very latest version:
 
@@ -74,13 +76,10 @@ Next, install the theme and its dependencies with:
 pip install -e plutus-pairtrading
 ```
 
-## with poetry
+## 🎭 Poetry
 
-Prerequisites:
 
-- [Poetry]
-
-Installing PLUTUS:
+Installing **PLUTUS**:
 
 ```bash
 poetry add plutus-pairtrading

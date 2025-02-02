@@ -1,8 +1,8 @@
-# Demo 
+# 🎥 Demo 
 
-## PLUTUS Pair Identification
+## 🎬 PLUTUS Pair Identification
 
-In this section, we demonstrate how to identify cointegrated pairs using the PLUTUS package.
+In this section, we demonstrate how to identify cointegrated pairs using the **PLUTUS**.
 
 ```py title="plutus_pair_identification_demo.py" linenums="1"
 import plutus_pairtrading.data_acquisitions as dacq
@@ -31,15 +31,15 @@ pairs_df = dgen.pairs_identification(
 print(pairs_df)
 ```
 
-## PLUTUS Stationarity Tests
+## 📈 PLUTUS Stationarity Tests
 
-PLUTUS provides a comprehensive suite of statistical tests to assess the properties of financial time-series data, ensuring robust pair-trading strategies. These tests help evaluate stationarity:
+**PLUTUS** provides a comprehensive suite of statistical tests to assess the properties of financial time-series data, ensuring robust pair-trading strategies. These tests help evaluate stationarity:
 
-- **Augmented Dickey-Fuller (ADF)** evaluates whether a series is stationary or contains a unit root.
-- **Phillips-Perron (PP)** is a non-parametric test for stationarity.
-- **Kwiatkowski-Phillips-Schmidt-Shin (KPSS)** checks if a series is stationary around a deterministic trend.
+- 🧪 **Augmented Dickey-Fuller (ADF)** evaluates whether a series is stationary or contains a unit root.
+- 📉 **Phillips-Perron (PP)** is a non-parametric test for stationarity.
+- 📊**Kwiatkowski-Phillips-Schmidt-Shin (KPSS)** checks if a series is stationary around a deterministic trend.
 
-### Augmented Dickey-Fuller
+### 🧪 Augmented Dickey-Fuller
 
 === "ADF"
 
@@ -79,7 +79,7 @@ PLUTUS provides a comprehensive suite of statistical tests to assess the propert
             }
     }
     ```
-### Phillips-Perron
+### 📉 Phillips-Perron
 
 === "PP"
 
@@ -117,7 +117,7 @@ PLUTUS provides a comprehensive suite of statistical tests to assess the propert
     }
     ```
 
-### Kwiatkowski-Phillips-Schmidt-Shin
+### 📊 Kwiatkowski-Phillips-Schmidt-Shin
 
 === "KPSS"
 
@@ -157,17 +157,17 @@ PLUTUS provides a comprehensive suite of statistical tests to assess the propert
     ```
 
 
-## PLUTUS Cointegration Tests
+## 🔗 PLUTUS Cointegration Tests
 
-PLUTUS provides a comprehensive suite of statistical tests to assess the properties of financial time-series data, ensuring robust pair-trading strategies. These tests help evaluate integration order, and cointegration between time-series. Available tests are:
+**PLUTUS** provides a comprehensive suite of statistical tests to assess the properties of financial time-series data, ensuring robust pair-trading strategies. These tests help evaluate integration order, and cointegration between time-series. Available tests are:
 
-- **Engle-Granger** performs test for cointegration between two time-series.
-- **Phillips-Ouliaris** is another  method to assess cointegration between two series.
-- **Johansen** evaluates cointegration among multiple time-series.
+- ⚖️ **Engle-Granger** performs test for cointegration between two time-series.
+- 🔍 **Phillips-Ouliaris** is another  method to assess cointegration between two series.
+- 🔄 **Johansen** evaluates cointegration among multiple time-series.
 
 These tests are critical for identifying relationships between time-series and determining their suitability for pair-trading strategies.
 
-### Engle-Granger
+### ⚖️ Engle-Granger
 
 === "Engle-Granger"
 
@@ -221,7 +221,7 @@ These tests are critical for identifying relationships between time-series and d
     }
     ```
 
-### Phillips-Ouliaris
+### 🔍 Phillips-Ouliaris
 
 === "Phillips-Ouliaris"
 
@@ -277,7 +277,7 @@ These tests are critical for identifying relationships between time-series and d
 
     ```
 
-### Johannes
+### 🔄 Johannes
 
 === "Johannes"
 
@@ -349,13 +349,11 @@ These tests are critical for identifying relationships between time-series and d
     ```
 
 
+## 📥 PLUTUS Data Acquisition 
 
+This section highlights how to acquire data using the **PLUTUS** package:
 
-## PLUTUS Data Acquisition 
-
-This section highlights how to acquire data using the PLUTUS package:
-
-You can fetch historical financial data for multiple tickers using the fetch_yahoo_finance_data function.
+You can fetch historical financial data for multiple tickers using the *fetch_yahoo_finance_data* function.
 
 === "Code"
 
@@ -407,9 +405,9 @@ You can fetch historical financial data for multiple tickers using the fetch_yah
     ![Demo plot_time_series_for_dacq](assets/dacq_plot_timeseries_screenshot.png){ width=800 }
 
 
-## PLUTUS Data Visualization
+## 📊 PLUTUS Data Visualization
 
-[PLUTUS] has `data_visualizations` module. Here’s how each plot for pair-trading looks like:
+**PLUTUS** has `data_visualizations` module. Here’s how each plot for pair-trading looks like:
 
 
 === "ACF and PACF"
@@ -528,9 +526,9 @@ You can fetch historical financial data for multiple tickers using the fetch_yah
     fig.show() 
     ```
 
-Thank you for exploring our demo! We hope this example has given you a brief understanding of how to utilize our package and integrate its features into your projects. Whether you're just getting started or diving deeper, our goal is to make your experience as seamless and productive as possible.
+Thank you for exploring our demo!🙌  We hope this example has given you a brief understanding of how to utilize our package and integrate its features into your projects. Whether you're just getting started or diving deeper, our goal is to make your experience as **seamless and productive** as possible.
 
-Happy coding!
+Happy coding! 💻💡🍀
 
   [PLUTUS]: https://pypi.org/project/plutus-pairtrading/
   [virtual environment]: https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment
