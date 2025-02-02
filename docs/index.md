@@ -12,7 +12,7 @@ title: PLUTUS Pair-Trading Toolkit
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://github.com/fox-techniques/plutus-pairtrading/blob/main/LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-plutus--pairtrading-181717?logo=github)](https://github.com/fox-techniques/plutus-pairtrading)
 
-PLUTUS is a Python-based toolkit for performing pair-trading analysis. This project is designed for educational purposes and provides analysis tools for:
+**PLUTUS** is a Python-based toolkit for performing **pair-trading analysis**. This project is designed for educational purposes and provides analysis tools for:
 
 - Fetching and processing financial data.
 - Conducting statistical tests (stationarity and cointegration).
@@ -20,45 +20,45 @@ PLUTUS is a Python-based toolkit for performing pair-trading analysis. This proj
 - Visualizing financial time-series data.
 
 
-## Key Features
+## 🌟 Key Features
 
-**1. Data Acquisition**
+➊ 📥 **Data Acquisition** 
 
-   - Fetch historical financial data using Yahoo Finance API.
-   - Store and manage time-series data in a structured format.
-   - Combine and preprocess data for analysis.
+- 📡 Fetch historical financial data using Yahoo Finance API.
+- 🗃️ Store and manage time-series data in a structured format.
+- 🔄 Combine and preprocess data for analysis.
 
-**2. Statistical Tests**
+➋ 📊 **Statistical Tests**
 
-   - Stationarity Tests
-  
-     - *Augmented Dickey-Fuller Test (ADF)* tests whether a time series is stationary.
-     - *Phillips-Perron Test (PP)* handles autocorrelations and heteroskedasticity.
-     - *KPSS* tests for trend stationarity.
+ 📈 *Stationarity Tests*
+      
+  - 🧪 **Augmented Dickey-Fuller Test (ADF)** tests whether a time series is stationary.
+  - 📉 **Phillips-Perron Test (PP)** handles autocorrelations and heteroskedasticity.
+  - 📊 **KPSS test** for trend stationarity.
 
-   - Cointegration Tests
-  
-       - *Engle-Granger* identifies long-term equilibrium relationships.
-       - *Phillips-Ouliaris* handles residual-based cointegration testing.
-       - *Johansen Test* detects multiple cointegration vectors.
+🔗 *Cointegration Tests*
 
-**3. Feature Engineering**
+  - ⚖️ **Engle-Granger** identifies long-term equilibrium relationships.
+  - 🔍 **Phillips-Ouliaris** handles residual-based cointegration testing.
+  - 🔄 **Johansen Test** detects multiple cointegration vectors.
 
-  - Compute periodic returns (daily, weekly, monthly).
-  - Apply logarithmic and exponential transformations.
-  - Calculate correlation matrices and filter securities based on thresholds.
-  - Identify cointegrated pairs for pair trading.
+➌ 🛠️ **Feature Engineering** 
 
-**4. Data Visualization**
+  - 📅 Compute periodic returns (daily, weekly, monthly).
+  - 🔢 Apply logarithmic and exponential transformations.
+  - 🔗 Calculate **correlation matrices** and filter securities based on thresholds.
+  - 🔬 **Identify cointegrated pairs for pair trading.**
 
-  - Plot financial time-series data.
-  - Generate dual-axis plots for comparing securities.
-  - Visualize correlation matrices.
-  - Plot autocorrelation and partial autocorrelation.
+➍ 📊 **Data Visualization** 
+
+  - 📈 Plot financial time-series data.
+  - 📊 Generate dual-axis plots for comparing securities.
+  - 🕵️‍♂️ Visualize correlation matrices.
+  - 🔄 Plot autocorrelation and partial autocorrelation.
   
 --- 
 
-## Quick Links
+## 🔗 Quick Links
 
 - [PyPI](https://pypi.org/project/plutus-pairtrading)
 - [GitHub Repository](https://github.com/fox-techniques/plutus-pairtrading)
