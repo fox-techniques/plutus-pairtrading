@@ -2795,14 +2795,14 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pymdown-extensions"
-version = "10.13"
+version = "10.16.1"
 description = "Extension pack for Python Markdown."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "pymdown_extensions-10.13-py3-none-any.whl", hash = "sha256:80bc33d715eec68e683e04298946d47d78c7739e79d808203df278ee8ef89428"},
-    {file = "pymdown_extensions-10.13.tar.gz", hash = "sha256:e0b351494dc0d8d14a1f52b39b1499a00ef1566b4ba23dc74f1eba75c736f5dd"},
+    {file = "pymdown_extensions-10.16.1-py3-none-any.whl", hash = "sha256:d6ba157a6c03146a7fb122b2b9a121300056384eafeec9c9f9e584adfdb2a32d"},
+    {file = "pymdown_extensions-10.16.1.tar.gz", hash = "sha256:aace82bcccba3efc03e25d584e6a22d27a8e17caa3f4dd9f207e49b787aa9a91"},
 ]
 
 [package.dependencies]
@@ -2810,7 +2810,7 @@ markdown = ">=3.6"
 pyyaml = "*"
 
 [package.extras]
-extra = ["pygments (>=2.12)"]
+extra = ["pygments (>=2.19.1)"]
 
 [[package]]
 name = "pyparsing"
